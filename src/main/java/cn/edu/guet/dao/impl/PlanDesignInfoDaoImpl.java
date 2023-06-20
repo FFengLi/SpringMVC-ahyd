@@ -14,10 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlanDesignInfoDaoImpl extends BaseDaoImpl<PlanDesignInfo>implements PlanDesignInfoDao {
 
@@ -90,19 +87,35 @@ public class PlanDesignInfoDaoImpl extends BaseDaoImpl<PlanDesignInfo>implements
 //        SELECT * FROM t_plan_design_business_route  LIMIT 0,4
         // 4：每页4条记录
         // 0：第XX页
-        int currentPage = planDesignDTO.getCurrent() - 1;
-        map.put(count++, currentPage);
-        map.put(count, planDesignDTO.getSize());
+        int currentPage = (planDesignDTO.getCurrent() - 1) * planDesignDTO.getSize();
+        int begin = count++;
+        int limit = count++;
+        map.put(begin, currentPage);
+        map.put(limit, planDesignDTO.getSize());
         sql = sql + whereClause + pagination;
         Connection conn = DBConnection.getConn();
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        map.forEach((key, value) -> {
+        Set<Integer> keySet = map.keySet();
+        Iterator<Integer> iterator = keySet.iterator();
+        while (iterator.hasNext()) {
+            Integer key = iterator.next();
+            Object value = map.get(key);
+            if (ClassUtils.isAssignable(value.getClass(), String.class)) {
+                preparedStatement.setObject(key, "%" + value + "%");
+            } else if (ClassUtils.isAssignable(value.getClass(), Timestamp.class)) {
+                preparedStatement.setString(key, DateUtil.format((Timestamp) value, "yyyy-MM-dd HH:mm:ss"));
+            } else {
+                preparedStatement.setObject(key, value);
+            }
+        }
+        /*map.forEach((key, value) -> {
             try {
                 if (ClassUtils.isAssignable(value.getClass(), String.class)) {
                     preparedStatement.setObject(key, "%" + value + "%");
                 } else if (ClassUtils.isAssignable(value.getClass(), List.class)) {
                     for (Timestamp timestamp : planDesignDTO.getCreateTime()) {
-                        preparedStatement.setString(key++, DateUtil.format(timestamp, "yyyy-MM-dd HH:mm:ss"));
+                        key++;
+                        preparedStatement.setString(key, DateUtil.format(timestamp, "yyyy-MM-dd HH:mm:ss"));
                     }
                 } else {
                     preparedStatement.setObject(key, value);
@@ -110,7 +123,7 @@ public class PlanDesignInfoDaoImpl extends BaseDaoImpl<PlanDesignInfo>implements
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        });
+        });*/
         List<PlanDesignInfo> planDesignInfoList = new ArrayList<>();
         ResultSet rs = preparedStatement.executeQuery();
         while (rs.next()) {
@@ -144,9 +157,25 @@ public class PlanDesignInfoDaoImpl extends BaseDaoImpl<PlanDesignInfo>implements
         Page<PlanDesignInfo> paginations = new Page<>();
         // 如何得出总记录数？执行SELECT COUNT(*) FROM plandesigninfo
         // 页数：总记录数/size，如果能整除，就是：总记录数/size，否则：总记录数/size+1
-        sql = "SELECT COUNT(*) FROM plandesigninfo";
-        pstmt = conn.prepareStatement(sql);
-        rs = pstmt.executeQuery();
+        sql = "SELECT COUNT(*) FROM plandesigninfo"+whereClause;
+        preparedStatement.close();
+        preparedStatement = conn.prepareStatement(sql);
+        map.remove(begin);
+        map.remove(limit);
+        Set<Integer> keySet1 = map.keySet();
+        Iterator<Integer> iterator1 = keySet1.iterator();
+        while (iterator1.hasNext()) {
+            Integer key = iterator1.next();
+            Object value = map.get(key);
+            if (ClassUtils.isAssignable(value.getClass(), String.class)) {
+                preparedStatement.setObject(key, "%" + value + "%");
+            } else if (ClassUtils.isAssignable(value.getClass(), Timestamp.class)) {
+                preparedStatement.setString(key, DateUtil.format((Timestamp) value, "yyyy-MM-dd HH:mm:ss"));
+            } else {
+                preparedStatement.setObject(key, value);
+            }
+        }
+        rs = preparedStatement.executeQuery();
         rs.next();
         int totalRow = rs.getInt(1);
         int pages = 0;
@@ -160,5 +189,17 @@ public class PlanDesignInfoDaoImpl extends BaseDaoImpl<PlanDesignInfo>implements
         paginations.setSize(planDesignDTO.getSize());
         paginations.setRecords(planDesignInfoList);
         return paginations;
+    }
+
+    @Override
+    public Long getPlanDesignIdByPlanBiilNo(String planBillNo) throws SQLException {
+        String sql = "SELECT id FROM plandesigninfo WHERE plan_bill_no = ?";
+        Connection conn = DBConnection.getConn();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1,planBillNo);
+        ResultSet rs = preparedStatement.executeQuery();
+        rs.next();
+        Long planDesignId = rs.getLong(1);
+        return planDesignId;
     }
 }

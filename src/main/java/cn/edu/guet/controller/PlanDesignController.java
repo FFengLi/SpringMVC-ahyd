@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +64,6 @@ public class PlanDesignController {
     public ResponseData createBill(PlanDesignInfo planDesignInfo){
         logger.info("创建工单:{}",planDesignInfo);
         planDesignInfo.setReviewer("fanFengLi");
-
         ResponseData responseData = planDesignService.createBill(planDesignInfo);
         return responseData;
 
@@ -70,7 +72,10 @@ public class PlanDesignController {
     @RequestMapping("/createBillAndAnalyse")
     public ResponseData createBillAndAnalyse(PlanDesignInfo planDesignInfo){
         // 返回对三种文件（系统规划CAD图纸、系统规划文件excel、波道规划文件excel）的分析结果
-        ResponseData analyseResult = planDesignService.createBillAndAnalyse(planDesignInfo);
+        planDesignInfo.setCreate_time(new Timestamp(System.currentTimeMillis()));
+        planDesignInfo.setUpdate_time(new Timestamp(System.currentTimeMillis()));
+        ResponseData analyseResult = null;
+        analyseResult = planDesignService.createBillAndAnalyse(planDesignInfo);
         return analyseResult;
     }
 
@@ -85,7 +90,4 @@ public class PlanDesignController {
         ResponseData upload = planDesignService.upload(request, response);
         return upload;
     }
-
-
-
 }

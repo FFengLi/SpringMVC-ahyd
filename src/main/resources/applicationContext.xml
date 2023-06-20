@@ -8,9 +8,11 @@
     <bean id="planDesignService" class="cn.edu.guet.service.impl.PlanDesignServiceImpl">
         <proporty name="routeCableDao" ref="routeCableDao"></proporty>
         <proporty name="planDesignInfoDao" ref="planDesignInfoDao"></proporty>
+        <property name="historyRecordDao" ref="historyRecordDao"></property>
     </bean>
 
     <bean id="routeCableDao" class="cn.edu.guet.dao.impl.RouteCableDaoImpl"></bean>
-    <bean id="planDesignInfoDao" class="cn.edu.guet.dao.impl.PlanDesignInfoDaoImpl">
-    </bean>
+    <bean id="planDesignInfoDao" class="cn.edu.guet.dao.impl.PlanDesignInfoDaoImpl"></bean>
+    <bean id="historyRecordDao" class="cn.edu.guet.dao.impl.HistoryRecordDaoImpl"></bean>
+
 </beans>
