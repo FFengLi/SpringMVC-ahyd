@@ -45,7 +45,9 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
                 Method method = iter.next();
                 sql += method.getName().substring(3).toLowerCase() + ",";
                 if (method.getReturnType().getSimpleName().indexOf("Timestamp") != -1) {
-                    obj[i] = Timestamp.valueOf(method.invoke(t, new Object[]{}).toString());
+                    if (method.invoke(t, new Object[]{})!=null){
+                        obj[i] = Timestamp.valueOf(method.invoke(t, new Object[]{}).toString());
+                    }
                 } else {
                     obj[i] = method.invoke(t, new Object[]{});
                 }

@@ -2,14 +2,17 @@ package cn.edu.guet.service.impl;
 
 import cn.edu.guet.bean.Page;
 import cn.edu.guet.bean.PlanDesignDTO;
+import cn.edu.guet.bean.PlanDesignHistoryRecord;
 import cn.edu.guet.bean.PlanDesignInfo;
 import cn.edu.guet.common.ResponseData;
+import cn.edu.guet.dao.HistoryRecordDao;
 import cn.edu.guet.dao.PlanDesignInfoDao;
 import cn.edu.guet.dao.RouteCableDao;
 import cn.edu.guet.dao.impl.BaseDaoImpl;
 import cn.edu.guet.service.PlanDesignService;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -35,6 +38,7 @@ public class PlanDesignServiceImpl implements PlanDesignService {
     public static Logger logger = LoggerFactory.getLogger(PlanDesignServiceImpl.class);
     private RouteCableDao routeCableDao;
     private PlanDesignInfoDao planDesignInfoDao;
+    private HistoryRecordDao historyRecordDao;
 
     public PlanDesignInfoDao getPlanDesignInfoDao() {
         return planDesignInfoDao;
@@ -46,6 +50,9 @@ public class PlanDesignServiceImpl implements PlanDesignService {
 
     public void setRouteCableDao(RouteCableDao routeCableDao) {
         this.routeCableDao = routeCableDao;
+    }
+    public void setHistoryRecordDao(HistoryRecordDao historyRecordDao) {
+        this.historyRecordDao = historyRecordDao;
     }
 
     /**
@@ -135,8 +142,7 @@ public class PlanDesignServiceImpl implements PlanDesignService {
     @Override
     public ResponseData createBillAndAnalyse(PlanDesignInfo planDesignInfo) {
 
-        createBill(planDesignInfo);
-
+        // 组装调用分析接口的参数
         Map<String, Object> map = new HashMap<>(8);
 //        planDesignInfo.setSystem_cad_file_url("http://172.168.27.251:26066/fastdfs/service/fastdfs/download?fileId=150855&access_token=332ee272-cd5b-4839-99a9-d941209339c8&fileUrl=group1/M00/00/DE/rKg_r2R4mOboLTd-ABWb9YCSO8Q051.dxf");
 //        planDesignInfo.setSystem_excel_file_url("http://172.168.27.251:26066/fastdfs/service/fastdfs/download?fileId=150856&access_token=332ee272-cd5b-4839-99a9-d941209339c8&fileUrl=group1/M00/00/DE/rKg_r2R4mne9tcZ7AAF2ALhvEg0468.xls");
@@ -165,7 +171,43 @@ public class PlanDesignServiceImpl implements PlanDesignService {
                 .execute();
         ResponseData responseData = (ResponseData) new Gson().fromJson(response.body(), ResponseData.class);
         logger.info("分析业务返回："+responseData);
-        return responseData;
+        // JSON转Map
+        Map<String, Object> map2 = JSONUtil.parseObj(responseData.getData());
+
+        PlanDesignHistoryRecord historyRecord = new PlanDesignHistoryRecord();
+        // 先获取分析号
+        historyRecord.setAnalyse_no((String) map2.get("analyseNo"));
+        historyRecord.setAnalyse_status(1);
+        historyRecord.setAnalyse_begin_time(new Timestamp(System.currentTimeMillis()));
+        historyRecord.setSystem_cad_file_url(planDesignInfo.getSystem_cad_file_url());
+        historyRecord.setSystem_cad_file_name(planDesignInfo.getSystem_cad_file_name());
+        historyRecord.setSystem_excel_file_url(planDesignInfo.getSystem_excel_file_url());
+        historyRecord.setSystem_excel_file_name(planDesignInfo.getSystem_excel_file_name());
+        historyRecord.setChannel_excel_file_url(planDesignInfo.getChannel_excel_file_url());
+        historyRecord.setChannel_excel_file_name(planDesignInfo.getChannel_excel_file_name());
+        historyRecord.setCreate_time(new Timestamp(System.currentTimeMillis()));
+
+
+        try {
+            // 保存工单
+            planDesignInfoDao.save(planDesignInfo);
+            Long planDesignId = planDesignInfoDao.getPlanDesignIdByPlanBiilNo(planDesignInfo.getPlan_bill_no());
+
+            // 保存历史记录
+            historyRecord.setPlan_design_id(planDesignId);
+            historyRecordDao.save(historyRecord);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return new ResponseData("保存成功");
     }
 
     @Override
@@ -229,5 +271,16 @@ public class PlanDesignServiceImpl implements PlanDesignService {
             e.printStackTrace();
         }
         return ResponseData.ok(pagination);
+    }
+
+    @Override
+    public Long getPlanDesignIdByPlanBiilNo(String planBillNo) {
+        Long id = null;
+        try {
+            id = planDesignInfoDao.getPlanDesignIdByPlanBiilNo(planBillNo);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 }

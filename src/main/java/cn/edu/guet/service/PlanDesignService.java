@@ -6,6 +6,8 @@ import cn.edu.guet.common.ResponseData;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 public interface PlanDesignService {
     ResponseData selectRouteCableList();
@@ -25,4 +27,6 @@ public interface PlanDesignService {
     ResponseData createOutBill(PlanDesignInfo planDesignInfo);
 
     ResponseData searchBill(PlanDesignDTO planDesignDTO);
+    public Long getPlanDesignIdByPlanBiilNo(String planBillNo);
+
 }

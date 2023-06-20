@@ -11,5 +11,6 @@ import java.util.List;
 public interface PlanDesignInfoDao extends BaseDao<PlanDesignInfo>{
     public List<String> getPlanBillNo() throws SQLException;
     Page<PlanDesignInfo> searchBill(PlanDesignDTO planDesignDTO) throws SQLException;
+    public Long getPlanDesignIdByPlanBiilNo(String planBillNo) throws SQLException;
 
 }
