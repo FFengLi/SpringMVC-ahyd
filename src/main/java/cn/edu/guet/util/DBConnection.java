@@ -16,23 +16,35 @@ import java.util.Properties;
  */
 public class DBConnection {
 
+	private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<>();
 	public static Connection getConn() {
-		Properties prop = new Properties();
-		InputStream in;
-		try {
-			in = Class.forName("cn.edu.guet.util.DBConnection").getResourceAsStream("/db.properties");
-			prop.load(in);
+		// 先从ThreadLocal中取出
+		Connection conn = connectionThreadLocal.get();
+		if (conn == null) {
+			Properties prop = new Properties();
+			InputStream in;
+			try {
+				in = Class.forName("cn.edu.guet.util.DBConnection").getResourceAsStream("/db.properties");
+				prop.load(in);
 
-			String url = prop.getProperty("url");
-			Class.forName(prop.getProperty("driver"));// 加载驱动
-			Connection conn = DriverManager.getConnection(url, prop.getProperty("user"), prop.getProperty("password"));
-			return conn;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
+				String url = prop.getProperty("url");
+				Class.forName(prop.getProperty("driver"));// 加载驱动
+				conn = DriverManager.getConnection(url, prop.getProperty("user"), prop.getProperty("password"));
+				// 第一次获取conn则为空，初始化后放入ThreadLocal以便后续获取同一个conn
+				connectionThreadLocal.set(conn);
+				return conn;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

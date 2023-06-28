@@ -6,6 +6,7 @@ import cn.edu.guet.common.ResponseData;
 import cn.edu.guet.mvc.annotation.Controller;
 import cn.edu.guet.mvc.annotation.RequestMapping;
 import cn.edu.guet.service.PlanDesignService;
+import cn.edu.guet.util.TransactionHandler;
 import com.google.gson.Gson;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -31,10 +32,14 @@ import java.util.List;
 public class PlanDesignController {
     public static Logger logger = LoggerFactory.getLogger(PlanDesignController.class);
     private PlanDesignService planDesignService;
+//    private TransactionHandler transactionHandler = new TransactionHandler();
 
     // 用于属性注入
     public void setPlanDesignService(PlanDesignService planDesignService) {
         this.planDesignService = planDesignService;
+//        create proxy object
+//        this.planDesignService = (PlanDesignService) transactionHandler.creatProxyObject(planDesignService);
+
     }
 
     /**
