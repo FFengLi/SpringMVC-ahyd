@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.guet.mapper.PlanDesignHistoryRecordMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.guet.bean.PlanDesignHistoryRecord">
+            <id property="id" column="Id" jdbcType="BIGINT"/>
+            <result property="planDesignId" column="plan_design_id" jdbcType="BIGINT"/>
+            <result property="analyseNo" column="analyse_no" jdbcType="VARCHAR"/>
+            <result property="analyseStatus" column="analyse_status" jdbcType="TINYINT"/>
+            <result property="analyseBeginTime" column="analyse_begin_time" jdbcType="TIMESTAMP"/>
+            <result property="analyseEndTime" column="analyse_end_time" jdbcType="TIMESTAMP"/>
+            <result property="analyseTime" column="analyse_time" jdbcType="INTEGER"/>
+            <result property="systemCadFileId" column="system_cad_file_id" jdbcType="INTEGER"/>
+            <result property="systemCadFileName" column="system_cad_file_name" jdbcType="VARCHAR"/>
+            <result property="systemCadFileUrl" column="system_cad_file_url" jdbcType="VARCHAR"/>
+            <result property="systemExcelFileId" column="system_excel_file_id" jdbcType="INTEGER"/>
+            <result property="systemExcelFileName" column="system_excel_file_name" jdbcType="VARCHAR"/>
+            <result property="systemExcelFileUrl" column="system_excel_file_url" jdbcType="VARCHAR"/>
+            <result property="channelExcelFileId" column="channel_excel_file_id" jdbcType="INTEGER"/>
+            <result property="channelExcelFileName" column="channel_excel_file_name" jdbcType="VARCHAR"/>
+            <result property="channelExcelFileUrl" column="channel_excel_file_url" jdbcType="VARCHAR"/>
+            <result property="analyseLog" column="analyse_log" jdbcType="VARCHAR"/>
+            <result property="analyseStaffId" column="analyse_staff_id" jdbcType="BIGINT"/>
+            <result property="analyseStaffName" column="analyse_staff_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        Id,plan_design_id,analyse_no,
+        analyse_status,analyse_begin_time,analyse_end_time,
+        analyse_time,system_cad_file_id,system_cad_file_name,
+        system_cad_file_url,system_excel_file_id,system_excel_file_name,
+        system_excel_file_url,channel_excel_file_id,channel_excel_file_name,
+        channel_excel_file_url,analyse_log,analyse_staff_id,
+        analyse_staff_name,create_time
+    </sql>
+<!--    保存历史记录-->
+    <insert id="saveHistory" parameterType="cn.edu.guet.bean.PlanDesignHistoryRecord">
+        INSERT INTO t_plan_design_history_record VALUES (#{id},#{planDesignId},#{analyseNo},#{analyseStatus},
+                                                         #{analyseBeginTime},#{analyseEndTime},#{analyseTime},#{systemCadFileId},
+                                                         #{systemCadFileName},#{systemCadFileUrl},#{systemExcelFileId},#{systemExcelFileName},
+                                                         #{systemExcelFileUrl},#{channelExcelFileId},#{channelExcelFileName},#{channelExcelFileUrl},
+                                                         #{analyseLog},#{analyseStaffId},#{analyseStaffName},#{createTime})
+    </insert>
+</mapper>

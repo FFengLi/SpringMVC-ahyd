@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.guet.mapper.PlanDesignInfoMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.guet.bean.PlanDesignInfo">
+            <id property="id" column="Id" jdbcType="BIGINT"/>
+            <result property="planBillNo" column="plan_bill_no" jdbcType="VARCHAR"/>
+            <result property="planDesignName" column="plan_design_name" jdbcType="VARCHAR"/>
+            <result property="designCompany" column="design_company" jdbcType="VARCHAR"/>
+            <result property="specId" column="spec_id" jdbcType="SMALLINT"/>
+            <result property="projectDirector" column="project_director" jdbcType="VARCHAR"/>
+            <result property="specLeader" column="spec_leader" jdbcType="VARCHAR"/>
+            <result property="designer" column="designer" jdbcType="VARCHAR"/>
+            <result property="reviewer" column="reviewer" jdbcType="VARCHAR"/>
+            <result property="source" column="source" jdbcType="TINYINT"/>
+            <result property="systemCadFileId" column="system_cad_file_id" jdbcType="INTEGER"/>
+            <result property="systemCadFileName" column="system_cad_file_name" jdbcType="VARCHAR"/>
+            <result property="systemCadFileUrl" column="system_cad_file_url" jdbcType="VARCHAR"/>
+            <result property="systemExcelFileId" column="system_excel_file_id" jdbcType="INTEGER"/>
+            <result property="systemExcelFileName" column="system_excel_file_name" jdbcType="VARCHAR"/>
+            <result property="systemExcelFileUrl" column="system_excel_file_url" jdbcType="VARCHAR"/>
+            <result property="channelExcelFileId" column="channel_excel_file_id" jdbcType="INTEGER"/>
+            <result property="channelExcelFileName" column="channel_excel_file_name" jdbcType="VARCHAR"/>
+            <result property="channelExcelFileUrl" column="channel_excel_file_url" jdbcType="VARCHAR"/>
+            <result property="cadCoordLeft" column="cad_coord_left" jdbcType="INTEGER"/>
+            <result property="cadCoordTop" column="cad_coord_top" jdbcType="INTEGER"/>
+            <result property="cadCoordRight" column="cad_coord_right" jdbcType="INTEGER"/>
+            <result property="cadCoordBottom" column="cad_coord_bottom" jdbcType="INTEGER"/>
+            <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+            <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--搜索工单-->
+    <select id="searchBill" resultMap="BaseResultMap" parameterType="cn.edu.guet.bean.PlanDesignDTO">
+        SELECT *
+        FROM t_plan_design_info
+        <where>
+            <if test="planDesignName!=null and planDesignName.length()!=0">
+                AND plan_design_name LIKE CONCAT('%',#{planDesignName},'%')
+            </if>
+            <if test="specId!=null">
+                AND spec_id=#{specId}
+            </if>
+            <if test="designer!=null and designer.length()!=0">
+                AND designer=#{designer}
+            </if>
+
+        </where>
+        LIMIT #{current},#{size}
+    </select>
+    
+    <!--获取当前工单号-->
+    <select id="getPlanBillNo" resultType="string">
+        SELECT plan_bill_no FROM t_plan_design_info ORDER BY plan_bill_no DESC
+    </select>
+
+<!--    获取工单id-->
+    <select id="getPlanDesignIdByPlanBiilNo" resultType="long" parameterType="string">
+        SELECT id FROM t_plan_design_info WHERE plan_bill_no = #{planBillNo}
+    </select>
+
+<!--    保存工单-->
+    <insert id="saveBill" parameterType="cn.edu.guet.bean.PlanDesignInfo">
+        INSERT INTO t_plan_design_info VALUES (#{id},#{planBillNo},#{planDesignName},#{designCompany},
+                                               #{specId},#{projectDirector},#{specLeader},#{designer},
+                                               #{reviewer},#{source},#{systemCadFileId},#{systemCadFileName},
+                                               #{systemCadFileUrl},#{systemExcelFileId},#{systemExcelFileName},#{systemExcelFileUrl},
+                                               #{channelExcelFileId},#{channelExcelFileName},#{channelExcelFileUrl},#{cadCoordLeft},
+                                               #{cadCoordTop},#{cadCoordRight},#{cadCoordBottom},#{staffId},
+                                               #{staffName},#{createTime},#{updateTime})
+    </insert>
+
+    <select id="getPlanDesignCountByWhere" resultType="int" parameterType="cn.edu.guet.bean.PlanDesignDTO">
+        SELECT COUNT(*)
+        FROM t_plan_design_info
+        <where>
+            <if test="planDesignName!=null and planDesignName.length()!=0">
+                AND plan_design_name LIKE CONCAT('%',#{planDesignName},'%')
+            </if>
+            <if test="specId!=null">
+                AND spec_id=#{specId}
+            </if>
+            <if test="designer!=null and designer.length()!=0">
+                AND designer=#{designer}
+            </if>
+
+        </where>
+    </select>
+</mapper>

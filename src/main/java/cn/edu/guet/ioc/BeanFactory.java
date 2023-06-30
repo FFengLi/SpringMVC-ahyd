@@ -15,7 +15,7 @@ import org.dom4j.io.SAXReader;
 public class BeanFactory {
 
     /**
-     * ¶öººÄ£Ê½
+     * é¥¿æ±‰æ¨¡å¼
      */
     private static BeanFactory instance = new BeanFactory();
     public static Map<String, Object> map = new HashMap<String, Object>();
@@ -23,7 +23,7 @@ public class BeanFactory {
     public static void parseElement(Element ele) {
         try {
             /**
-             * Í¨¹ı·´Éä´´½¨¶ÔÏó
+             * é€šè¿‡åå°„åˆ›å»ºå¯¹è±¡
              */
             Object beanObj = null;
             Class clazz = null;
@@ -34,10 +34,10 @@ public class BeanFactory {
                 map.put(id, beanObj);
             }
 
-            //eleÊÇ·ñÓĞ×ÓÔªËØ
+            //eleæ˜¯å¦æœ‰å­å…ƒç´ 
             Object obj = null;
             String ref = "";
-            List<Element> childElements = ele.elements();//µÃµ½eleµÄ×ÓÔªËØ¼¯ºÏ
+            List<Element> childElements = ele.elements();//å¾—åˆ°eleçš„å­å…ƒç´ é›†åˆ
             for (Element childEle : childElements) {
                 ref = childEle.attributeValue("ref");
                 obj = map.get(ref);
@@ -45,7 +45,7 @@ public class BeanFactory {
                     for (Element el : list) {
                         String ids = el.attributeValue("id");
                         if (ids.equals(ref)) {
-                            parseElement(el);// µİ¹é´¦Àí  µÚÒ»´ÎÑ­»·el±íÊ¾permissionDao
+                            parseElement(el);// é€’å½’å¤„ç†  ç¬¬ä¸€æ¬¡å¾ªç¯elè¡¨ç¤ºpermissionDao
                         }
                     }
                 }
@@ -55,7 +55,7 @@ public class BeanFactory {
                     for (Method m : methods) {
                         if (m.getName().startsWith("set") && m.getName().toLowerCase().contains(ref.toLowerCase())) {
                         /*
-                        ·´Éäµ÷ÓÃÀàµÄsetXXX·½·¨ÊµÏÖbeanµÄ×Ô¶¯×¢Èë
+                        åå°„è°ƒç”¨ç±»çš„setXXXæ–¹æ³•å®ç°beançš„è‡ªåŠ¨æ³¨å…¥
                          */
                             m.invoke(beanObj, obj);
                         }
@@ -69,14 +69,14 @@ public class BeanFactory {
 
     static List<Element> list;
 
-    //¾²Ì¬¿é£ºJVMÓöµ½¾²Ì¬¿é»áÖ±½ÓÖ´ĞĞ
+    //é™æ€å—ï¼šJVMé‡åˆ°é™æ€å—ä¼šç›´æ¥æ‰§è¡Œ
     static {
         try {
             SAXReader reader = new SAXReader();
             InputStream in = Class.forName("cn.edu.guet.ioc.BeanFactory")
                     .getResourceAsStream("/applicationContext.xml");
             Document doc = reader.read(in);
-            // xPathExpression£ºxPath±í´ïÊ½
+            // xPathExpressionï¼šxPathè¡¨è¾¾å¼
             list = doc.selectNodes("/beans/bean");
             for (Element ele : list) {
                 parseElement(ele);
