@@ -117,15 +117,26 @@
         </dependency>
 
 <!--        打印执行的SQL-->
+<!--        <dependency>-->
+<!--            <groupId>com.googlecode.log4jdbc</groupId>-->
+<!--            <artifactId>log4jdbc</artifactId>-->
+<!--            <version>1.2</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-log4j12</artifactId>-->
+<!--            <version>1.7.2</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>com.googlecode.log4jdbc</groupId>
-            <artifactId>log4jdbc</artifactId>
-            <version>1.2</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.17.1</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.2</version>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.9</version>
         </dependency>
 
     </dependencies>

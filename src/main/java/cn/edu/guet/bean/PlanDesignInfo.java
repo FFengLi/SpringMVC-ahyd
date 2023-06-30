@@ -1,42 +1,66 @@
 package cn.edu.guet.bean;
 
+import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
+/**
+ * @TableName t_plan_design_info
+ */
 @Data
-public class PlanDesignInfo {
+public class PlanDesignInfo implements Serializable {
     private Long id;
-    private  String plan_bill_no;
-    private String design_company;
-    private int spec_id;
-    private String project_director;
-    private String spec_leader;
+
+    private String planBillNo;
+
+    private String planDesignName;
+
+    private String designCompany;
+
+    private Integer specId;
+
+    private String projectDirector;
+
+    private String specLeader;
+
     private String designer;
-    private  String plan_design_name;
-    //    校审人
+
     private String reviewer;
-    private int source;
 
+    private Integer source;
 
-    private String system_cad_file_name;
-    private String system_cad_file_url;
-    private String system_excel_file_name;
-    private String system_excel_file_url;
-    private String channel_excel_file_name;
-    private String channel_excel_file_url;
-    private int cad_coord_left;
-    private int cad_coord_top;
-    private int cad_coord_right;
-    private int cad_coord_bottom;
-    private Integer staff_id;
-    private String staff_name;
+    private Integer systemCadFileId;
 
+    private String systemCadFileName;
 
-    private Timestamp create_time;
-    private Timestamp update_time;
+    private String systemCadFileUrl;
 
+    private Integer systemExcelFileId;
 
+    private String systemExcelFileName;
 
+    private String systemExcelFileUrl;
+
+    private Integer channelExcelFileId;
+
+    private String channelExcelFileName;
+
+    private String channelExcelFileUrl;
+
+    private Integer cadCoordLeft;
+
+    private Integer cadCoordTop;
+
+    private Integer cadCoordRight;
+
+    private Integer cadCoordBottom;
+
+    private Integer staffId;
+
+    private String staffName;
+
+    private Date createTime;
+
+    private Date updateTime;
 
 }
