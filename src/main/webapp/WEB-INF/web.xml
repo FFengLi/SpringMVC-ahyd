@@ -71,7 +71,7 @@
 
     <filter-mapping>
         <filter-name>CORS</filter-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <!--    系统启动的时候做一些初始化工作，如读取context-param里面的参数值（此处即扫描读取applicationContext.xml文件）-->

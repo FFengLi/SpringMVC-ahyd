@@ -30,7 +30,7 @@ public class PlanDesignController {
 //
 //    }
 
-    @RequestMapping("/getPlanBillNo")
+    @GetMapping("/getPlanBillNo")
     public ResponseData getPlanBillNo() {
         String planBillNo = planDesignInfoService.getPlanBillNo();
         if (!planBillNo.isEmpty()) {
@@ -43,7 +43,7 @@ public class PlanDesignController {
 
 
 
-    @RequestMapping("/createBill")
+    @PostMapping("/createBill")
     public ResponseData createBill(@RequestBody PlanDesignInfo planDesignInfo){
         logger.info("创建工单:{}",planDesignInfo);
         planDesignInfo.setReviewer("fanFengLi");
@@ -52,7 +52,7 @@ public class PlanDesignController {
 
     }
 
-    @RequestMapping("/createBillAndAnalyse")
+    @PostMapping("/createBillAndAnalyse")
     public ResponseData createBillAndAnalyse(@RequestBody PlanDesignInfo planDesignInfo){
         // 返回对三种文件（系统规划CAD图纸、系统规划文件excel、波道规划文件excel）的分析结果
         planDesignInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
@@ -62,13 +62,13 @@ public class PlanDesignController {
         return analyseResult;
     }
 
-    @RequestMapping("/searchBill")
-    public ResponseData searchBill(@RequestBody PlanDesignDTO planDesignDTO){
+    @PostMapping("/searchBill")
+    public ResponseData searchBill(@RequestBody(required = false) PlanDesignDTO planDesignDTO){
         logger.info("搜索条件：{}", planDesignDTO);
         return planDesignInfoService.searchBill(planDesignDTO);
     }
 
-    @RequestMapping("/upload")
+    @PostMapping("/upload")
     public ResponseData upload(HttpServletRequest request, HttpServletResponse response) {
         ResponseData upload = planDesignInfoService.upload(request, response);
         return upload;
