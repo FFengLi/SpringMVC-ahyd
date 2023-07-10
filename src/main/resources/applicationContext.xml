@@ -1,10 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-<beans>
-    <bean id="planDesignController" class="cn.edu.guet.controller.PlanDesignController">
-        <proporty name="planDesignInfoService" ref="planDesignInfoService"></proporty>
+    <context:property-placeholder location="classpath*:jdbc.properties"></context:property-placeholder>
+    <!-- 数据源即代表数据库连接connection -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+<!--    <bean id="planDesignController" class="cn.edu.guet.controller.PlanDesignController">-->
+<!--        <property name="planDesignInfoService" ref="planDesignInfoService"></property>-->
+<!--    </bean>-->
+
+<!--    <bean id="planDesignInfoService" class="cn.edu.guet.service.impl.PlanDesignInfoServiceImpl">-->
+<!--    </bean>-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"></property>
+        <property name="typeAliasesPackage" value="cn.edu.guet.bean"></property>
+    </bean>
+    <!-- MapperScannerConfigurer负责创建Mapper的代理对象（动态代理），然后放入IOC容器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.edu.guet.mapper"></property>
     </bean>
 
-    <bean id="planDesignInfoService" class="cn.edu.guet.service.impl.PlanDesignInfoServiceImpl">
+    <!-- 事务的配置，该类相当于自己写的实现了InvocationHandler接口的jdk动态代理类 -->
+    <!-- spring提供的事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
     </bean>
+
+    <!-- 基于注解的事务驱动配置 -->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+    <!--
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* cn.edu.guet.service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"></aop:advisor>
+    </aop:config>
+    -->
+    <!-- 无需显式使用transactionManager -->
+    <!--
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="save*" propagation="REQUIRED" no-rollback-for="org.springframework.dao.DataIntegrityViolationException"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="get*" read-only="true"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+    -->
+
+    <context:component-scan base-package="cn.edu.guet.controller, cn.edu.guet.service.impl"></context:component-scan>
 </beans>
+

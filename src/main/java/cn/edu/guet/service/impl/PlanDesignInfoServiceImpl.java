@@ -21,6 +21,10 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,16 +40,21 @@ import java.util.*;
 * @description 针对表【t_plan_design_info(规划设计评估主表)】的数据库操作Service实现
 * @createDate 2023-06-28 17:37:09
 */
+@Service
 public class PlanDesignInfoServiceImpl implements PlanDesignInfoService{
     public static Logger logger = LoggerFactory.getLogger(PlanDesignInfoServiceImpl.class);
-    private SqlSession sqlSession = null;
+//    private SqlSession sqlSession = null;
+    @Autowired
+    private PlanDesignInfoMapper planDesignInfoMapper;
+    @Autowired
+    private PlanDesignHistoryRecordMapper planDesignHistoryRecordMapper;
 
     @Override
     public ResponseData searchBill(PlanDesignDTO planDesignDTO) {
-        sqlSession = DBUtil.getSqlSession();
-////    实际上是创建了一个代理对象，该代理对象会在方法调用时将方法调用转发给底层的SQL语句执行。
-        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
-        logger.info("实现类中searchBill的{}",sqlSession);
+//        sqlSession = DBUtil.getSqlSession();
+//    实际上是创建了一个代理对象，该代理对象会在方法调用时将方法调用转发给底层的SQL语句执行。
+//        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
+//        logger.info("实现类中searchBill的{}",sqlSession);
         int totalRow = planDesignInfoMapper.getPlanDesignCountByWhere(planDesignDTO);
         int currentPage = (planDesignDTO.getCurrent() - 1) * planDesignDTO.getSize();
         planDesignDTO.setCurrent(currentPage);
@@ -68,11 +77,11 @@ public class PlanDesignInfoServiceImpl implements PlanDesignInfoService{
 
     @Override
     public String getPlanBillNo() {
-        sqlSession = DBUtil.getSqlSession();
+//        sqlSession = DBUtil.getSqlSession();
 //    实际上是创建了一个代理对象，该代理对象会在方法调用时将方法调用转发给底层的SQL语句执行。
-        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
+//        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
         List<String> planBillNumbers = planDesignInfoMapper.getPlanBillNo();
-        logger.info("实现类中getPlanBillNo的{}",sqlSession);
+//        logger.info("实现类中getPlanBillNo的{}",sqlSession);
         Date now = new Date(System.currentTimeMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String nowDate = sdf.format(now);
@@ -109,9 +118,9 @@ public class PlanDesignInfoServiceImpl implements PlanDesignInfoService{
 
     @Override
     public Long getPlanDesignIdByPlanBiilNo(String planBillNo) {
-        sqlSession = DBUtil.getSqlSession();
+//        sqlSession = DBUtil.getSqlSession();
 //    实际上是创建了一个代理对象，该代理对象会在方法调用时将方法调用转发给底层的SQL语句执行。
-        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
+//        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
         Long planDesignIdByPlanBiilNo = planDesignInfoMapper.getPlanDesignIdByPlanBiilNo(planBillNo);
         return planDesignIdByPlanBiilNo;
     }
@@ -165,11 +174,11 @@ public class PlanDesignInfoServiceImpl implements PlanDesignInfoService{
 
     @Override
     public ResponseData createBill(PlanDesignInfo planDesignInfo) {
-        sqlSession = DBUtil.getSqlSession();
+//        sqlSession = DBUtil.getSqlSession();
 //    实际上是创建了一个代理对象，该代理对象会在方法调用时将方法调用转发给底层的SQL语句执行。
-        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
+//        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
 
-        logger.info("实现类中createBill的{}",sqlSession);
+//        logger.info("实现类中createBill的{}",sqlSession);
         System.out.println(planDesignInfo);
         // 获取当前时间
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -199,15 +208,16 @@ public class PlanDesignInfoServiceImpl implements PlanDesignInfoService{
         return new ResponseData("工单创建失败");
     }
 
+    @Transactional
     @Override
     public ResponseData createBillAndAnalyse(PlanDesignInfo planDesignInfo) {
         // 组装调用分析接口的参数
         Map<String, Object> map = new HashMap<>(8);
-        sqlSession = DBUtil.getSqlSession();
-        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
-        PlanDesignHistoryRecordMapper  planDesignHistoryRecordMapper= sqlSession.getMapper(PlanDesignHistoryRecordMapper.class);
+//        sqlSession = DBUtil.getSqlSession();
+//        PlanDesignInfoMapper planDesignInfoMapper = sqlSession.getMapper(PlanDesignInfoMapper.class);
+//        PlanDesignHistoryRecordMapper  planDesignHistoryRecordMapper= sqlSession.getMapper(PlanDesignHistoryRecordMapper.class);
 
-        logger.info("实现类中createBillAndAnalyse的{}",sqlSession);
+//        logger.info("实现类中createBillAndAnalyse的{}",sqlSession);
         map.put("systemCADFilePath", planDesignInfo.getSystemCadFileUrl());
         map.put("systemExcelFilePath", planDesignInfo.getSystemExcelFileUrl());
         map.put("channelExcelFilePath", planDesignInfo.getChannelExcelFileUrl());

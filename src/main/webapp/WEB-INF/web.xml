@@ -2,8 +2,47 @@
         "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
+<!--<web-app>-->
+<!--    <display-name>Archetype Created Web Application</display-name>-->
+<!--    <filter>-->
+<!--        <filter-name>CORS</filter-name>-->
+<!--        <description>跨域过滤器</description>-->
+<!--        <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>-->
+<!--        <init-param>-->
+<!--            <param-name>cors.allowOrigin</param-name>-->
+<!--            <param-value>*</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>cors.supportedMethods</param-name>-->
+<!--            <param-value>GET, POST, HEAD, PUT, DELETE</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>cors.supportedHeaders</param-name>-->
+<!--            <param-value>Accept, Origin, X-Requested-With, Content-Type, Last-Modified</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>cors.exposedHeaders</param-name>-->
+<!--            <param-value>Set-Cookie</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>cors.supportsCredentials</param-name>-->
+<!--            <param-value>true</param-value>-->
+<!--        </init-param>-->
+<!--    </filter>-->
+
+<!--    <filter-mapping>-->
+<!--        <filter-name>CORS</filter-name>-->
+<!--        <url-pattern>/*</url-pattern>-->
+<!--    </filter-mapping>-->
+<!--</web-app>-->
+
 <web-app>
     <display-name>Archetype Created Web Application</display-name>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:applicationContext.xml</param-value>
+    </context-param>
     <filter>
         <filter-name>CORS</filter-name>
         <description>跨域过滤器</description>
@@ -32,6 +71,27 @@
 
     <filter-mapping>
         <filter-name>CORS</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </filter-mapping>
+
+    <!--    系统启动的时候做一些初始化工作，如读取context-param里面的参数值（此处即扫描读取applicationContext.xml文件）-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <!-- 配置前端控制器，会自动扫描dispatcher-config.xml，然后创建Controller对象，并放入IoC容器 -->
+    <servlet>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath*:dispatcher-config.xml</param-value>
+        </init-param>
+    </servlet>
+    <!--    配置servlet处理的请求-->
+    <servlet-mapping>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
 </web-app>
+

@@ -4,29 +4,31 @@ import cn.edu.guet.bean.PlanDesignDTO;
 import cn.edu.guet.bean.PlanDesignInfo;
 import cn.edu.guet.common.ResponseData;
 import cn.edu.guet.mvc.annotation.Controller;
-import cn.edu.guet.mvc.annotation.RequestMapping;
 import cn.edu.guet.service.PlanDesignInfoService;
 import cn.edu.guet.util.TransactionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 
-@Controller
+@RestController
 public class PlanDesignController {
     public static Logger logger = LoggerFactory.getLogger(PlanDesignController.class);
+    @Autowired
     private PlanDesignInfoService planDesignInfoService;
-    private TransactionHandler transactionHandler = new TransactionHandler();
+//    private TransactionHandler transactionHandler = new TransactionHandler();
 
     // 用于属性注入
-    public void setPlanDesignInfoService(PlanDesignInfoService planDesignInfoService) {
-//        this.planDesignInfoService = planDesignInfoService;
-//        create proxy object
-        this.planDesignInfoService = (PlanDesignInfoService) transactionHandler.creatProxyObject(planDesignInfoService);
-
-    }
+//    public void setPlanDesignInfoService(PlanDesignInfoService planDesignInfoService) {
+////        this.planDesignInfoService = planDesignInfoService;
+////        create proxy object
+//        this.planDesignInfoService = (PlanDesignInfoService) transactionHandler.creatProxyObject(planDesignInfoService);
+//
+//    }
 
     @RequestMapping("/getPlanBillNo")
     public ResponseData getPlanBillNo() {
@@ -42,7 +44,7 @@ public class PlanDesignController {
 
 
     @RequestMapping("/createBill")
-    public ResponseData createBill(PlanDesignInfo planDesignInfo){
+    public ResponseData createBill(@RequestBody PlanDesignInfo planDesignInfo){
         logger.info("创建工单:{}",planDesignInfo);
         planDesignInfo.setReviewer("fanFengLi");
         ResponseData responseData = planDesignInfoService.createBill(planDesignInfo);
@@ -51,7 +53,7 @@ public class PlanDesignController {
     }
 
     @RequestMapping("/createBillAndAnalyse")
-    public ResponseData createBillAndAnalyse(PlanDesignInfo planDesignInfo){
+    public ResponseData createBillAndAnalyse(@RequestBody PlanDesignInfo planDesignInfo){
         // 返回对三种文件（系统规划CAD图纸、系统规划文件excel、波道规划文件excel）的分析结果
         planDesignInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
         planDesignInfo.setUpdateTime(new Timestamp(System.currentTimeMillis()));
@@ -61,7 +63,7 @@ public class PlanDesignController {
     }
 
     @RequestMapping("/searchBill")
-    public ResponseData searchBill(PlanDesignDTO planDesignDTO){
+    public ResponseData searchBill(@RequestBody PlanDesignDTO planDesignDTO){
         logger.info("搜索条件：{}", planDesignDTO);
         return planDesignInfoService.searchBill(planDesignDTO);
     }
